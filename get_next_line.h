@@ -6,18 +6,24 @@
 /*   By: jalombar <jalombar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/21 15:29:34 by jalombar          #+#    #+#             */
-/*   Updated: 2024/05/22 15:17:33 by jalombar         ###   ########.fr       */
+/*   Updated: 2024/05/23 17:24:12 by jalombar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <fcntl.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 
 typedef struct s_list
 {
-	void			*content;
+	char			*content;
 	struct s_list	*next;
 }					t_list;
 
 char				*get_next_line(int fd);
+char				*ft_strchr(const char *s, int c);
+int					ft_strlen(const char *s);
+char				*ft_strncat(char *dest, char *src, int nb);
+t_list				*ft_lst_add(t_list **lst, char *content);
+char				*ft_strdup(const char *s);
