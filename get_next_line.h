@@ -6,7 +6,7 @@
 /*   By: jalombar <jalombar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/21 15:29:34 by jalombar          #+#    #+#             */
-/*   Updated: 2024/05/23 17:24:12 by jalombar         ###   ########.fr       */
+/*   Updated: 2024/05/24 14:48:14 by jalombar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+
+#define BUFFER_SIZE 10
 
 typedef struct s_list
 {
