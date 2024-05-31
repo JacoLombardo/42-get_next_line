@@ -6,11 +6,27 @@
 /*   By: jalombar <jalombar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/21 15:32:01 by jalombar          #+#    #+#             */
-/*   Updated: 2024/05/23 17:18:16 by jalombar         ###   ########.fr       */
+/*   Updated: 2024/05/31 20:37:17 by jalombar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
+
+void	*ft_memcpy(char *dest, char *src)
+{
+	size_t		i;
+
+	if (!dest && !src)
+		return (NULL);
+	i = 0;
+	while (src[i])
+	{
+		dest[i] = src[i];
+		i++;
+	}
+	dest[i] = '\0';
+	return (dest);
+}
 
 char	*ft_strchr(const char *s, int c)
 {
@@ -58,24 +74,6 @@ int	ft_strlen(const char *s)
 	return (i);
 }
 
-char	*ft_strdup(const char *s)
-{
-	char	*dup;
-	int		i;
-
-	i = 0;
-	dup = (char *)malloc((ft_strlen(s) + 1) * sizeof(char));
-	if (!dup)
-		return (NULL);
-	while (s[i])
-	{
-		dup[i] = s[i];
-		i++;
-	}
-	dup[i] = '\0';
-	return (dup);
-}
-
 t_list	*ft_lst_add(t_list **lst, char *content)
 {
 	t_list	*temp;
@@ -84,7 +82,7 @@ t_list	*ft_lst_add(t_list **lst, char *content)
 	new = malloc(sizeof(t_list));
 	if (!new)
 		return (NULL);
-	new->content = ft_strdup(content);
+	ft_memcpy(new->content, content);
 	new->next = NULL;
 	temp = NULL;
 	if (*lst)
