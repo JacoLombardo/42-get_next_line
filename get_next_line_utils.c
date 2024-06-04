@@ -6,7 +6,7 @@
 /*   By: jalombar <jalombar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/21 15:32:01 by jalombar          #+#    #+#             */
-/*   Updated: 2024/05/31 20:37:17 by jalombar         ###   ########.fr       */
+/*   Updated: 2024/06/04 14:37:43 by jalombar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,15 +28,15 @@ void	*ft_memcpy(char *dest, char *src)
 	return (dest);
 }
 
-char	*ft_strchr(const char *s, int c)
+char	*ft_strchr(char *s, int c)
 {
 	int		i;
 
 	i = 0;
 	while (i < (ft_strlen(s) + 1))
 	{
-		if (((char *)s)[i] == (char)c)
-			return ((char *)s + i);
+		if (s[i] == (char)c)
+			return (s + i);
 		i++;
 	}
 	return (NULL);
@@ -62,7 +62,7 @@ char	*ft_strncat(char *dest, char *src, int nb)
 	return (dest);
 }
 
-int	ft_strlen(const char *s)
+int	ft_strlen(char *s)
 {
 	int	i;
 
