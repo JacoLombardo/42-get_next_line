@@ -6,7 +6,7 @@
 /*   By: jalombar <jalombar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/21 15:29:14 by jalombar          #+#    #+#             */
-/*   Updated: 2024/06/04 14:37:39 by jalombar         ###   ########.fr       */
+/*   Updated: 2024/06/05 15:48:37 by jalombar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,8 +118,10 @@ char	*get_next_line(int fd)
 	ft_lstfree(lst, buffer, 0);
 	return (next_line);
 }
+#include <fcntl.h>
+#include <stdio.h>
 
-/* int	main(int argc, char **argv)
+int	main(int argc, char **argv)
 {
 	int		fd;
 	int		i;
@@ -144,4 +146,4 @@ char	*get_next_line(int fd)
 		close(fd);
 	}
 	return (0);
-} */
+}

@@ -6,7 +6,7 @@
 /*   By: jalombar <jalombar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/21 15:29:34 by jalombar          #+#    #+#             */
-/*   Updated: 2024/06/04 14:47:17 by jalombar         ###   ########.fr       */
+/*   Updated: 2024/06/05 11:34:02 by jalombar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 
 typedef struct s_list
 {
-	int				fd;
 	char			content[BUFFER_SIZE];
 	struct s_list	*next;
 }					t_list;
