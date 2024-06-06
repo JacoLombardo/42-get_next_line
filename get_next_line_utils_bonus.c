@@ -6,26 +6,55 @@
 /*   By: jalombar <jalombar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/04 12:16:12 by jalombar          #+#    #+#             */
-/*   Updated: 2024/06/06 12:35:11 by jalombar         ###   ########.fr       */
+/*   Updated: 2024/06/06 17:28:35 by jalombar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line_bonus.h"
 
-void	*ft_memcpy(char *dest, char *src, int size)
+char	*ft_strdup(char *s, int size)
 {
-	int	i;
+	char	*dup;
+	int		i;
 
-	if (!dest && !src)
-		return (NULL);
 	i = 0;
+	dup = (char *)malloc((ft_zerolen(s, -2) + 1) * sizeof(char));
+	if (!dup)
+		return (NULL);
 	while (i < size)
 	{
-		dest[i] = src[i];
-		i++;
+		dup[i] = s[i];
+ 		i++;
+	} 
+	dup[i] = '\0';
+	return (dup);
+}
+
+char	*ft_strc(char *s, int size, int c)
+{
+	char	*dup;
+	int		i;
+
+	i = -1;
+	dup = NULL;
+	if (size == -2)
+	{
+		while (++i < (ft_zerolen(s, -2) + 1))
+		{
+			if (s[i] == (char)c)
+				return (s + i);
+		}
 	}
-	dest[i] = '\0';
-	return (dest);
+	else
+	{
+		dup = (char *)malloc((ft_zerolen(s, -2) + 1) * sizeof(char));
+		if (!dup)
+			return (NULL);
+		while (++i < size)
+			dup[i] = s[i];
+		dup[i] = '\0';
+	}
+	return (dup);
 }
 
 char	*ft_strchr(char *s, int c)
@@ -33,9 +62,7 @@ char	*ft_strchr(char *s, int c)
 	int	i;
 
 	i = 0;
-	if (!s)
-		return (NULL);
-	while (i < (ft_strlen(s) + 1))
+	while (i < (ft_zerolen(s, -2) + 1))
 	{
 		if (s[i] == (char)c)
 			return (s + i);
@@ -62,7 +89,7 @@ char	*ft_strncat(char *dest, char *src, int nb)
 	return (dest);
 }
 
-int	ft_strlen(char *s)
+/* int	ft_strlen(char *s)
 {
 	int	i;
 
@@ -83,13 +110,13 @@ void	ft_bzero(char *s, size_t n)
 		i++;
 	}
 }
-
-int	ft_lenandzero(char *s, char c, size_t n)
+ */
+int	ft_zerolen(char *s, int n)
 {
-	size_t	i;
+	int	i;
 
 	i = 0;
-	if (c == 'z')
+	if (n != -2)
 	{
 		while (i < n)
 		{
@@ -106,7 +133,7 @@ int	ft_lenandzero(char *s, char c, size_t n)
 	}
 }
 
-t_list_bonus	*ft_lst_add(t_list_bonus **lst, char *content, int fd,
+t_list_bonus	*ft_lst_add(t_list_bonus **lst, char *str, int fd,
 		int bytes_read)
 {
 	t_list_bonus	*temp;
@@ -115,8 +142,8 @@ t_list_bonus	*ft_lst_add(t_list_bonus **lst, char *content, int fd,
 	new = malloc(sizeof(t_list_bonus));
 	if (!new)
 		return (NULL);
-	ft_memcpy(new->content, content, bytes_read);
-	new->content[bytes_read] = '\0';
+	new->str = ft_strdup(str, bytes_read);
+	// ft_memcpy(new->str, str, bytes_read);
 	new->fd = fd;
 	new->next = NULL;
 	temp = *lst;

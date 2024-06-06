@@ -6,30 +6,12 @@
 /*   By: jalombar <jalombar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/04 12:19:56 by jalombar          #+#    #+#             */
-/*   Updated: 2024/06/06 14:30:03 by jalombar         ###   ########.fr       */
+/*   Updated: 2024/06/06 17:09:44 by jalombar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line_bonus.h"
 
-/* char	*ft_bufferfree(t_list_bonus *buff, int fd)
-{
-	t_list_bonus	*temp;
-	t_list_bonus	*temp;
-
-	temp = buff;
-	if (buff)
-	{
-		while (buff)
-		{
-			temp = buff->next;
-			if (buff->fd == fd)
-				free(buff);
-			buff = temp;
-		}
-	}
-	return (NULL);
-} */
 char	*ft_lstfree(t_list_bonus *lst, char *buffer)
 {
 	t_list_bonus	*temp;
@@ -40,44 +22,14 @@ char	*ft_lstfree(t_list_bonus *lst, char *buffer)
 		while (lst)
 		{
 			temp = lst->next;
+			free(lst->str);
 			free(lst);
 			lst = temp;
 		}
 	}
 	if (buffer)
-		ft_bzero(buffer, BUFFER_SIZE);
+		free(buffer);
 	return (NULL);
-}
-
-int	ft_test(t_list_bonus *lst, char c)
-{
-	t_list_bonus	*temp;
-	int				length;
-
-	length = 0;
-	temp = lst;
-	if (lst && c == 'c')
-	{
-		while (lst)
-		{
-			temp = lst->next;
-			free(lst);
-			lst = temp;
-		}
-	}
-	else if (c == 'd')
-	{
-		while (temp)
-		{
-			if (!ft_strchr(temp->content, '\n'))
-				length += ft_strlen(temp->content);
-			else
-				length += ft_strlen(temp->content)
-					- ft_strlen(ft_strchr(temp->content, '\n')) + 1;
-			temp = temp->next;
-		}
-	}
-	return (length);
 }
 
 int	ft_line_length(t_list_bonus *lst)
@@ -89,11 +41,11 @@ int	ft_line_length(t_list_bonus *lst)
 	p = lst;
 	while (p)
 	{
-		if (!ft_strchr(p->content, '\n'))
-			length += ft_strlen(p->content);
+		if (!ft_strchr(p->str, '\n'))
+			length += ft_zerolen(p->str, -2);
 		else
-			length += ft_strlen(p->content) - ft_strlen(ft_strchr(p->content,
-						'\n')) + 1;
+			length += ft_zerolen(p->str, -2) - ft_zerolen(ft_strchr(p->str,
+						'\n'), -2) + 1;
 		p = p->next;
 	}
 	return (length);
@@ -109,15 +61,16 @@ void	ft_add_buffer(t_list_bonus **buff, t_list_bonus **lst, int fd)
 	prev = NULL;
 	while (current)
 	{
-		if (current->fd == fd && current->content[0])
+		if (current->fd == fd && current->str[0])
 		{
-			ft_lst_add(lst, current->content, fd, ft_strlen(current->content));
+			ft_lst_add(lst, current->str, fd, ft_zerolen(current->str, -2));
 			if (prev)
 				prev->next = current->next;
 			else
 				*buff = current->next;
 			temp = current;
 			current = current->next;
+			free(temp->str);
 			free(temp);
 		}
 		else
@@ -135,24 +88,24 @@ char	*ft_create_line_bonus(t_list_bonus *first, t_list_bonus **buff, int fd)
 	line = (char *)malloc((ft_line_length(first) + 1) * sizeof(char));
 	if (!line)
 		return (NULL);
-	ft_bzero(line, (ft_line_length(first) + 1));
+	ft_zerolen(line, (ft_line_length(first) + 1));
 	while (first)
 	{
 		if (first->next)
-			ft_strncat(line, first->content, ft_strlen(first->content));
+			ft_strncat(line, first->str, ft_zerolen(first->str, -2));
 		else
 		{
-			if (ft_strchr(first->content, '\n'))
+			if (ft_strchr(first->str, '\n'))
 			{
-				ft_strncat(line, first->content, (ft_strlen(first->content)
-						- ft_strlen(ft_strchr(first->content, '\n')) + 1));
-				if (ft_strchr(first->content, '\n')[1])
-					ft_lst_add(buff, (ft_strchr(first->content, '\n') + 1), fd,
-						ft_strlen(ft_strchr(first->content, '\n') + 1));
+				ft_strncat(line, first->str, (ft_zerolen(first->str, -2)
+						- ft_zerolen(ft_strchr(first->str, '\n'), -2) + 1));
+				if (ft_strchr(first->str, '\n')[1])
+					ft_lst_add(buff, (ft_strchr(first->str, '\n') + 1), fd,
+						ft_zerolen(ft_strchr(first->str, '\n') + 1, -2));
 				return (line);
 			}
 			else
-				ft_strncat(line, first->content, ft_strlen(first->content));
+				ft_strncat(line, first->str, ft_zerolen(first->str, -2));
 		}
 		first = first->next;
 	}
@@ -162,8 +115,7 @@ char	*ft_create_line_bonus(t_list_bonus *first, t_list_bonus **buff, int fd)
 char	*get_next_line(int fd)
 {
 	static t_list_bonus	*buff;
-	char				buffer[BUFFER_SIZE + 1];
-	char	*buffer;
+	char				*buffer;
 	char				*next_line;
 	t_list_bonus		*lst;
 	int					bytes_read;
@@ -171,20 +123,18 @@ char	*get_next_line(int fd)
 	lst = NULL;
 	bytes_read = 1;
 	next_line = NULL;
-	//ft_bzero(buffer, (BUFFER_SIZE + 1));
 	buffer = (char *)malloc((BUFFER_SIZE + 1) * sizeof(char));
-	if (!buffer)
-		return (NULL);
-	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, 0, 0) < 0)
-		return (ft_lstfree(buff, buffer));
+	if (!buffer || fd < 0 || BUFFER_SIZE <= 0 || read(fd, 0, 0) < 0)
+		return (ft_lstfree(lst, buffer));
 	ft_add_buffer(&buff, &lst, fd);
+	ft_zerolen(buffer, (BUFFER_SIZE + 1));
 	while (!ft_strchr(buffer, '\n') && bytes_read)
 	{
-		if (lst && ft_strchr(lst->content, '\n'))
+		if (lst && ft_strchr(lst->str, '\n'))
 			break ;
-		ft_bzero(buffer, (BUFFER_SIZE + 1));
+		ft_zerolen(buffer, (BUFFER_SIZE + 1));
 		bytes_read = read(fd, buffer, BUFFER_SIZE);
-		buffer[bytes_read] = '\0';
+		//buffer[bytes_read] = '\0';
 		if (bytes_read)
 			ft_lst_add(&lst, buffer, fd, bytes_read);
 	}
@@ -194,7 +144,7 @@ char	*get_next_line(int fd)
 	return (next_line);
 }
 
-#include <fcntl.h>
+/* #include <fcntl.h>
 
 int	main(int argc, char **argv)
 {
@@ -222,30 +172,82 @@ int	main(int argc, char **argv)
 		close(fd);
 	}
 	return (0);
-}
+} */
 
 /* #include <fcntl.h>
 
 int	main(void)
 {
-	int	fd1;
-	int	fd2;
-	int	fd3;
+	int	fd1, fd2;
+	char *line;
 
-	fd1 = open("dummy.txt", O_RDONLY);
-	fd2 = open("dum.txt", O_RDONLY);
-	fd3 = open("a.txt", O_RDONLY);
-	printf("1st of fd1-> %s\n", get_next_line(fd1));
-	printf("1st of fd2-> %s\n", get_next_line(fd2));
-	printf("1st of fd3-> %s\n", get_next_line(fd3));
-	printf("2nd of fd1-> %s\n", get_next_line(fd1));
-	printf("2nd of fd2-> %s\n", get_next_line(fd2));
-	printf("2nd of fd3-> %s\n", get_next_line(fd3));
-	printf("3rd of fd1-> %s\n", get_next_line(fd1));
-	printf("3rd of fd2-> %s\n", get_next_line(fd2));
-	printf("3rd of fd3-> %s\n", get_next_line(fd3));
+	fd1 = open("read_error.txt", O_RDONLY);
+	fd2 = open("lines_around_10.txt", O_RDONLY);
+
+	line = get_next_line(fd1);
+	printf("1-> %s\n", line);
+	free(line);
+
+	line = get_next_line(fd2);
+	printf("2-> %s\n", line);
+	free(line);
+
+	line = get_next_line(fd1);
+	printf("3-> %s\n", line);
+	free(line);
+
+	line = get_next_line(fd2);
+	printf("4-> %s\n", line);
+	free(line);
+
+
+	line = get_next_line(fd1);
+	free(line);
+	line = get_next_line(fd1);
+	free(line);
+	line = get_next_line(fd1);
+	printf("5-> %s\n", line);
+	free(line);
+	close(fd1);
+
+	line = get_next_line(fd2);
+	printf("6-> %s\n", line);
+	free(line);
+
+	fd1 = open("read_error.txt", O_RDONLY);
+	line = get_next_line(fd1);
+	printf("7-> %s\n", line);
+	free(line);
+
+	line = get_next_line(fd2);
+	printf("8-> %s\n", line);
+	free(line);
+
+	line = get_next_line(fd1);
+	printf("9-> %s\n", line);
+	free(line);
+	line = get_next_line(fd1);
+	printf("10-> %s\n", line);
+	free(line);
+
+	line = get_next_line(fd2);
+	printf("11-> %s\n", line);
+	free(line);
+	line = get_next_line(fd2);
+	printf("12-> %s\n", line);
+	free(line);
+
+	line = get_next_line(fd1);
+	printf("13-> %s\n", line);
+	free(line);
+	line = get_next_line(fd1);
+	printf("14-> %s\n", line);
+	free(line);
+
 	close(fd1);
 	close(fd2);
-	close(fd3);
+
+
 	return (0);
-} */
+}
+ */
