@@ -5,35 +5,25 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: jalombar <jalombar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/05/21 15:32:01 by jalombar          #+#    #+#             */
-/*   Updated: 2024/06/05 16:53:09 by jalombar         ###   ########.fr       */
+/*   Created: 2024/06/04 12:16:12 by jalombar          #+#    #+#             */
+/*   Updated: 2024/06/07 13:57:17 by jalombar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-void	*ft_memcpy(char *dest, char *src)
-{
-	size_t		i;
-
-	if (!dest && !src)
-		return (NULL);
-	i = 0;
-	while (src[i])
-	{
-		dest[i] = src[i];
-		i++;
-	}
-	dest[i] = '\0';
-	return (dest);
-}
-
 char	*ft_strchr(char *s, int c)
 {
-	int		i;
+	int	i;
+	int	len;
 
 	i = 0;
-	while (i < (ft_strlen(s) + 1))
+	len = 0;
+	if (!s)
+		return (NULL);
+	while (s[len])
+		len++;
+	while (i < (len + 1))
 	{
 		if (s[i] == (char)c)
 			return (s + i);
@@ -42,52 +32,80 @@ char	*ft_strchr(char *s, int c)
 	return (NULL);
 }
 
-char	*ft_strncat(char *dest, char *src, int nb)
+void	ft_bzero(char *s, size_t n)
 {
-	int	i;
-	int	j;
+	size_t	i;
 
 	i = 0;
-	j = 0;
-	while (dest[j])
+	while (i < n)
 	{
-		j++;
-	}
-	while (src[i] && i < nb)
-	{
-		dest[j + i] = src[i];
+		s[i] = '\0';
 		i++;
 	}
-	dest[j + i] = '\0';
-	return (dest);
 }
 
-int	ft_strlen(char *s)
+char	*ft_lstfree(t_list_bonus *lst)
+{
+	t_list_bonus	*temp;
+
+	temp = lst;
+	if (lst)
+	{
+		while (lst)
+		{
+			temp = lst->next;
+			free(lst->str);
+			free(lst);
+			lst = temp;
+		}
+	}
+	lst = NULL;
+	return (NULL);
+}
+
+int	ft_line_length(t_list_bonus *lst)
 {
 	int	i;
+	int	len;
 
 	i = 0;
-	while (s[i])
+	len = 0;
+	while (lst)
 	{
-		i++;
+		i = 0;
+		if (lst->str == NULL)
+		{
+			return (len);
+		}
+		while (lst->str[i])
+		{
+			if (lst->str[i] == '\n')
+			{
+				len++;
+				return (len);
+			}
+			i++;
+			len++;
+		}
+		lst = lst->next;
 	}
-	return (i);
+	return (len);
 }
 
-t_list	*ft_lst_add(t_list **lst, char *content)
+t_list_bonus	*ft_lst_add(t_list_bonus **lst, char *str, int fd)
 {
-	t_list	*temp;
-	t_list	*new;
+	t_list_bonus	*temp;
+	t_list_bonus	*new;
 
-	new = malloc(sizeof(t_list));
+	new = malloc(sizeof(t_list_bonus));
 	if (!new)
 		return (NULL);
-	ft_memcpy(new->content, content);
+	new->str = str;
+	new->fd = fd;
 	new->next = NULL;
-	temp = NULL;
+	temp = *lst;
 	if (*lst)
 	{
-		temp = *lst;
 		while (temp->next)
 			temp = temp->next;
 		temp->next = new;
