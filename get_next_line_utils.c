@@ -6,7 +6,7 @@
 /*   By: jalombar <jalombar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/04 12:16:12 by jalombar          #+#    #+#             */
-/*   Updated: 2024/06/07 13:57:17 by jalombar         ###   ########.fr       */
+/*   Updated: 2024/06/10 13:28:33 by jalombar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,21 +32,38 @@ char	*ft_strchr(char *s, int c)
 	return (NULL);
 }
 
-void	ft_bzero(char *s, size_t n)
+void	ft_free_buff(t_list **buff, int fd)
 {
-	size_t	i;
+	t_list	*temp;
+	t_list	*prev;
+	t_list	*current;
 
-	i = 0;
-	while (i < n)
+	current = *buff;
+	prev = NULL;
+	while (current)
 	{
-		s[i] = '\0';
-		i++;
+		if (current->fd == fd)
+		{
+			if (prev)
+				prev->next = current->next;
+			else
+				*buff = current->next;
+			temp = current;
+			free(temp->content);
+			free(temp);
+			break ;
+		}
+		else
+		{
+			prev = current;
+			current = current->next;
+		}
 	}
 }
 
-char	*ft_lstfree(t_list_bonus *lst)
+char	*ft_lstfree(t_list *lst, t_list **buff, int fd)
 {
-	t_list_bonus	*temp;
+	t_list	*temp;
 
 	temp = lst;
 	if (lst)
@@ -54,16 +71,18 @@ char	*ft_lstfree(t_list_bonus *lst)
 		while (lst)
 		{
 			temp = lst->next;
-			free(lst->str);
+			free(lst->content);
 			free(lst);
 			lst = temp;
 		}
 	}
 	lst = NULL;
+	if (buff)
+		ft_free_buff(buff, fd);
 	return (NULL);
 }
 
-int	ft_line_length(t_list_bonus *lst)
+int	ft_line_length(t_list *lst)
 {
 	int	i;
 	int	len;
@@ -73,17 +92,12 @@ int	ft_line_length(t_list_bonus *lst)
 	while (lst)
 	{
 		i = 0;
-		if (lst->str == NULL)
-		{
+		if (lst->content == NULL)
 			return (len);
-		}
-		while (lst->str[i])
+		while (lst->content[i])
 		{
-			if (lst->str[i] == '\n')
-			{
-				len++;
-				return (len);
-			}
+			if (lst->content[i] == '\n')
+				return (++len);
 			i++;
 			len++;
 		}
@@ -92,15 +106,15 @@ int	ft_line_length(t_list_bonus *lst)
 	return (len);
 }
 
-t_list_bonus	*ft_lst_add(t_list_bonus **lst, char *str, int fd)
+t_list	*ft_lst_add(t_list **lst, char *str, int fd)
 {
-	t_list_bonus	*temp;
-	t_list_bonus	*new;
+	t_list	*temp;
+	t_list	*new;
 
-	new = malloc(sizeof(t_list_bonus));
+	new = malloc(sizeof(t_list));
 	if (!new)
 		return (NULL);
-	new->str = str;
+	new->content = str;
 	new->fd = fd;
 	new->next = NULL;
 	temp = *lst;
