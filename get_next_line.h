@@ -6,12 +6,19 @@
 /*   By: jalombar <jalombar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/04 12:15:09 by jalombar          #+#    #+#             */
-/*   Updated: 2024/06/10 13:29:49 by jalombar         ###   ########.fr       */
+/*   Updated: 2024/06/12 14:59:58 by jalombar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdlib.h>
-#include <unistd.h>
+#ifndef GET_NEXT_LINE_H
+# define GET_NEXT_LINE_H
+
+# include <stdlib.h>
+# include <unistd.h>
+
+# ifndef BUFFER_SIZE
+#  define BUFFER_SIZE 5
+# endif
 
 typedef struct s_list
 {
@@ -27,3 +34,5 @@ char				*ft_lstfree(t_list *lst, t_list **buff, int fd);
 void				ft_copy_line(t_list *list, char *line, char *buffer);
 char				*ft_strchr(char *s, int c);
 void				ft_free_buff(t_list **buff, int fd);
+
+#endif
